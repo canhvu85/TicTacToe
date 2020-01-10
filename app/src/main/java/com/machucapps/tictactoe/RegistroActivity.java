@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,6 +56,8 @@ public class RegistroActivity extends AppCompatActivity {
             String name = mEtName.getText().toString();
             String email = mEtMail.getText().toString();
             String password = mEtPassword.getText().toString();
+        } else {
+            Toast.makeText(this, "Rellena todos los cambios", Toast.LENGTH_LONG).show();
         }
     }
 

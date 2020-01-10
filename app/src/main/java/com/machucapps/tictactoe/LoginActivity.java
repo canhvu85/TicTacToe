@@ -67,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
         String email = mEtMail.getText().toString();
         String password = mEtPassword.getText().toString();
 
-        setFormVisibilityGone(!email.isEmpty() && !password.isEmpty());
+        setFormVisibilityGone(isFieldEmpty(mEtMail) && isFieldEmpty(mEtPassword));
     }
 
     /**
@@ -78,4 +78,15 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(new Intent(this, RegistroActivity.class));
         finish();
     }
+
+    /**
+     * Check if field has text or is empty
+     *
+     * @param field - view
+     * @return true is empty - false otherwise
+     */
+    private boolean isFieldEmpty(EditText field) {
+        return !field.getText().toString().isEmpty();
+    }
+
 }
