@@ -1,8 +1,10 @@
-package com.machucapps.tictactoe;
+package com.machucapps.tictactoe.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.machucapps.tictactoe.R;
 
 public class FindGameActivity extends AppCompatActivity {
 

@@ -1,9 +1,10 @@
-package com.machucapps.tictactoe;
+package com.machucapps.tictactoe.ui;
 
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.machucapps.tictactoe.R;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
