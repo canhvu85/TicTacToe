@@ -27,8 +27,6 @@ import butterknife.OnClick;
  */
 public class SignUpActivity extends BaseActivity implements OnCompleteListener, OnSuccessListener {
 
-    FirebaseFirestore db;
-
     /**
      * BindView's
      */
@@ -65,7 +63,6 @@ public class SignUpActivity extends BaseActivity implements OnCompleteListener, 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db = FirebaseFirestore.getInstance();
     }
 
     /**

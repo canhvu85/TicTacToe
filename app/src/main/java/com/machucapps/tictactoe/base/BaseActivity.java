@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import butterknife.ButterKnife;
 
@@ -19,6 +20,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * FirebaseAuth
      */
     protected FirebaseAuth firebaseAuth;
+    protected FirebaseFirestore db;
 
     /**
      * {@inheritDoc}
@@ -31,6 +33,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         setContentView(getLayoutID());
         ButterKnife.bind(this);
         firebaseAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
 
     /**
