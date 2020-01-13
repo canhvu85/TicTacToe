@@ -76,6 +76,7 @@ public class FindGameActivity extends BaseActivity {
      */
     @OnClick(R.id.buttonPlay)
     public void onButtonPlayOnClick() {
+        changeMenuVisibility(false);
 
     }
 
