@@ -6,4 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".ui.FindGameActivity">
 
+    <TextView
+        android:id="@+id/textViewLoading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        tools:text="Cargando..."
+        app:layout_constraintBottom_toTopOf="@+id/progressBarGames"
+        app:layout_constraintEnd_toEndOf="@+id/progressBarGames"
+        app:layout_constraintStart_toStartOf="@+id/progressBarGames" />
+
+    <ProgressBar
+        android:id="@+id/progressBarGames"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
