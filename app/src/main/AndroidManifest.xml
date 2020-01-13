@@ -17,7 +17,7 @@
             android:label="@string/title_activity_game"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".ui.FindGameActivity" />
-        <activity android:name=".ui.RegistroActivity" />
+        <activity android:name=".ui.SignUpActivity" />
         <activity android:name=".ui.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

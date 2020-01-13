@@ -119,7 +119,7 @@ public class LoginActivity extends BaseActivity implements OnCompleteListener {
      */
     @OnClick(R.id.btn_registro)
     public void onSignUpButtonClick() {
-        startActivity(new Intent(this, RegistroActivity.class));
+        startActivity(new Intent(this, SignUpActivity.class));
         finish();
     }
 

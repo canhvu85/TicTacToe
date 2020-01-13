@@ -23,9 +23,9 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
- * RegistroActivity Class
+ * SignUpActivity Class
  */
-public class RegistroActivity extends BaseActivity implements OnCompleteListener, OnSuccessListener {
+public class SignUpActivity extends BaseActivity implements OnCompleteListener, OnSuccessListener {
 
     FirebaseFirestore db;
 
