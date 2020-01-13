@@ -11,10 +11,13 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.machucapps.tictactoe.R;
 import com.machucapps.tictactoe.base.BaseActivity;
+import com.machucapps.tictactoe.model.User;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -22,7 +25,9 @@ import butterknife.OnClick;
 /**
  * RegistroActivity Class
  */
-public class RegistroActivity extends BaseActivity implements OnCompleteListener {
+public class RegistroActivity extends BaseActivity implements OnCompleteListener, OnSuccessListener {
+
+    FirebaseFirestore db;
 
     /**
      * BindView's
@@ -60,6 +65,7 @@ public class RegistroActivity extends BaseActivity implements OnCompleteListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        db = FirebaseFirestore.getInstance();
     }
 
     /**
@@ -71,9 +77,9 @@ public class RegistroActivity extends BaseActivity implements OnCompleteListener
     public void updateUI(FirebaseUser firebaseUser, Boolean isSignUp) {
         setPbVisibility(true);
         if (null != firebaseUser) {
-            setPbVisibility(false);
-            startActivity(new Intent(this, FindGameActivity.class));
-            finish();
+            User user = new User(mEtName.getText().toString(), 0, 0);
+            db.collection("Users").document(firebaseUser.getUid()).set(user).addOnSuccessListener(this);
+
         } else {
             setPbVisibility(false);
             Toast.makeText(this, "Se ha producido un error", Toast.LENGTH_LONG).show();
@@ -115,6 +121,7 @@ public class RegistroActivity extends BaseActivity implements OnCompleteListener
     private void createUser(String name, String email, String password) {
         setPbVisibility(true);
         firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, this);
+
     }
 
     /**
@@ -144,4 +151,10 @@ public class RegistroActivity extends BaseActivity implements OnCompleteListener
         }
     }
 
+    @Override
+    public void onSuccess(Object o) {
+        setPbVisibility(false);
+        startActivity(new Intent(this, FindGameActivity.class));
+        finish();
+    }
 }
