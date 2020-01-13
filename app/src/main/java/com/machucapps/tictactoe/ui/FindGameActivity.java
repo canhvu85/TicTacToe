@@ -98,6 +98,7 @@ public class FindGameActivity extends BaseActivity implements OnCompleteListener
      * Look for a game where some player is waiting for another player
      */
     private void lookForFreeGame() {
+        changeMenuVisibility(false);
         mTxtLoading.setText("Buscando una partida empezada...");
         db.collection("jugadas").whereEqualTo("JugadorDosId", "").get().addOnCompleteListener(this);
 
@@ -140,6 +141,9 @@ public class FindGameActivity extends BaseActivity implements OnCompleteListener
     @Override
     public void onComplete(@NonNull Task<QuerySnapshot> task) {
         if (task.getResult().size() == 0) {
+            mTxtLoading.setText("Creando una partida nueva...");
+            Game newGame = new Game(userId);
+            db.collection("jugadas").add(newGame).addOnSuccessListener(documentReference -> gameId = documentReference.getId()).addOnFailureListener(this);
 
         } else {
             DocumentSnapshot docJugada = task.getResult().getDocuments().get(0);
@@ -175,6 +179,6 @@ public class FindGameActivity extends BaseActivity implements OnCompleteListener
     @Override
     public void onFailure(@NonNull Exception e) {
         changeMenuVisibility(true);
-        Toast.makeText(this, "Se produjo un error al entrar en la partida", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Se ha producido un error", Toast.LENGTH_LONG).show();
     }
 }
