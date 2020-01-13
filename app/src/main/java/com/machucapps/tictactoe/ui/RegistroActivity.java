@@ -1,7 +1,6 @@
 package com.machucapps.tictactoe.ui;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,22 +12,17 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.machucapps.tictactoe.R;
+import com.machucapps.tictactoe.base.BaseActivity;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
  * RegistroActivity Class
  */
-public class RegistroActivity extends AppCompatActivity implements OnCompleteListener {
-
-    private FirebaseAuth mFirebaseAuth;
-    private FirebaseFirestore mFirebaseFirestore;
+public class RegistroActivity extends BaseActivity implements OnCompleteListener {
 
     /**
      * BindView's
@@ -51,14 +45,48 @@ public class RegistroActivity extends AppCompatActivity implements OnCompleteLis
     /**
      * {@inheritDoc}
      *
+     * @return
+     */
+    @Override
+    public int getLayoutID() {
+        return R.layout.activity_registro;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registro);
-        ButterKnife.bind(this);
-        mFirebaseAuth = FirebaseAuth.getInstance();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param firebaseUser - Firebase User
+     */
+    @Override
+    public void updateUI(FirebaseUser firebaseUser, Boolean isSignUp) {
+        setPbVisibility(true);
+        if (null != firebaseUser) {
+            setPbVisibility(false);
+            startActivity(new Intent(this, FindGameActivity.class));
+            finish();
+        } else {
+            setPbVisibility(false);
+            Toast.makeText(this, "Se ha producido un error", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Set visibility of progress bar
+     *
+     * @param visibility - boolean
+     */
+    private void setPbVisibility(boolean visibility) {
+        mPbSignUp.setVisibility(visibility ? View.VISIBLE : View.GONE);
     }
 
     /**
@@ -77,9 +105,16 @@ public class RegistroActivity extends AppCompatActivity implements OnCompleteLis
         }
     }
 
+    /**
+     * Create User
+     *
+     * @param name
+     * @param email
+     * @param password
+     */
     private void createUser(String name, String email, String password) {
-        setFormVisibilityGone(false);
-        mFirebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, this);
+        setPbVisibility(true);
+        firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, this);
     }
 
     /**
@@ -92,21 +127,6 @@ public class RegistroActivity extends AppCompatActivity implements OnCompleteLis
         return !field.getText().toString().isEmpty();
     }
 
-    /**
-     * Update UI
-     *
-     * @param user - FirebaseUser
-     */
-    private void updateUI(FirebaseUser user) {
-        if (null != user) {
-            startActivity(new Intent(this, FindGameActivity.class));
-            finish();
-        } else {
-            setFormVisibilityGone(true);
-            mEtPassword.setError("Alguno de los campos es incorrecto");
-            mEtPassword.requestFocus();
-        }
-    }
 
     /**
      * {@inheritDoc}
@@ -115,23 +135,13 @@ public class RegistroActivity extends AppCompatActivity implements OnCompleteLis
      */
     @Override
     public void onComplete(@NonNull Task task) {
+        setPbVisibility(false);
         if (task.isSuccessful()) {
-            FirebaseUser user = mFirebaseAuth.getCurrentUser();
-
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            updateUI(user, true);
         } else {
             Toast.makeText(this, "Se ha producido un error", Toast.LENGTH_LONG).show();
-            updateUI(null);
         }
     }
 
-    /**
-     * Set visibility of views
-     * If mail and password are not empty - true, else - otherwise
-     *
-     * @param visibility - boolean
-     */
-    private void setFormVisibilityGone(boolean visibility) {
-        mFormSignUp.setVisibility(visibility ? View.GONE : View.VISIBLE);
-        mPbSignUp.setVisibility(visibility ? View.VISIBLE : View.GONE);
-    }
 }
