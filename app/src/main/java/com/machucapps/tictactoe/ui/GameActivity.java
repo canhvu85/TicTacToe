@@ -2,32 +2,66 @@ package com.machucapps.tictactoe.ui;
 
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.machucapps.tictactoe.R;
-
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.view.View;
+import com.google.firebase.auth.FirebaseUser;
+import com.machucapps.tictactoe.R;
+import com.machucapps.tictactoe.base.BaseActivity;
 
-public class GameActivity extends AppCompatActivity {
+import butterknife.BindView;
+import butterknife.OnClick;
 
+/**
+ * GameActivity Class
+ */
+public class GameActivity extends BaseActivity {
+    /**
+     * BindView's
+     */
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return
+     */
+    @Override
+    public int getLayoutID() {
+        return R.layout.activity_game;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
+
+    /**
+     * On FAB's Button Click
+     */
+    @OnClick(R.id.fab)
+    public void OnFabButtonClick() {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param firebaseUser - Firebase User
+     * @param isSignUp
+     */
+    @Override
+    public void updateUI(FirebaseUser firebaseUser, Boolean isSignUp) {
+
+    }
+
+
 
 }

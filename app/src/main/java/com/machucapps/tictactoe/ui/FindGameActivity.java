@@ -1,14 +1,26 @@
 package com.machucapps.tictactoe.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.machucapps.tictactoe.R;
 import com.machucapps.tictactoe.base.BaseActivity;
+import com.machucapps.tictactoe.model.Game;
+import com.machucapps.tictactoe.utils.Constants;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -16,10 +28,11 @@ import butterknife.OnClick;
 /**
  * FindGameActivity Class
  */
-public class FindGameActivity extends BaseActivity {
+public class FindGameActivity extends BaseActivity implements OnCompleteListener<QuerySnapshot>, OnSuccessListener<Void>, OnFailureListener {
 
     private FirebaseUser currentUser;
     private String userId;
+    private String gameId;
 
     /**
      * BindView's
@@ -77,6 +90,16 @@ public class FindGameActivity extends BaseActivity {
     @OnClick(R.id.buttonPlay)
     public void onButtonPlayOnClick() {
         changeMenuVisibility(false);
+        lookForFreeGame();
+
+    }
+
+    /**
+     * Look for a game where some player is waiting for another player
+     */
+    private void lookForFreeGame() {
+        mTxtLoading.setText("Buscando una partida empezada...");
+        db.collection("jugadas").whereEqualTo("JugadorDosId", "").get().addOnCompleteListener(this);
 
     }
 
@@ -85,6 +108,7 @@ public class FindGameActivity extends BaseActivity {
      */
     @OnClick(R.id.buttonRanking)
     public void onButtonRankingOnClick() {
+
 
     }
 
@@ -106,5 +130,51 @@ public class FindGameActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         changeMenuVisibility(true);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param task
+     */
+    @Override
+    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+        if (task.getResult().size() == 0) {
+
+        } else {
+            DocumentSnapshot docJugada = task.getResult().getDocuments().get(0);
+            gameId = docJugada.getId();
+            Game game = docJugada.toObject(Game.class);
+            game.setPlayerTwoId(userId);
+            db.collection("jugadas").document(gameId).set(game).addOnSuccessListener(this).addOnFailureListener(this);
+        }
+
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param aVoid
+     */
+    @Override
+    public void onSuccess(Void aVoid) {
+        startGame();
+    }
+
+    private void startGame() {
+        Intent intent = new Intent(this, GameActivity.class);
+        intent.putExtra(Constants.EXTRA_GAME_ID, gameId);
+        startActivity(intent);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param e
+     */
+    @Override
+    public void onFailure(@NonNull Exception e) {
+        changeMenuVisibility(true);
+        Toast.makeText(this, "Se produjo un error al entrar en la partida", Toast.LENGTH_LONG).show();
     }
 }

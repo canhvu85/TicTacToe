@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Move {
+public class Game {
 
     private String playeOneId;
     private String playerTwoId;
@@ -14,10 +14,10 @@ public class Move {
     private Date gameDateCreated;
     private String IdDNF;
 
-    public Move() {
+    public Game() {
     }
 
-    public Move(String playeOneId) {
+    public Game(String playeOneId) {
         this.playeOneId = playeOneId;
         this.playerTwoId = "";
         this.selectedCell = new ArrayList<>();
