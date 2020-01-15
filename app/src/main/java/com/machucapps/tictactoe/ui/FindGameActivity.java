@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -54,6 +55,9 @@ public class FindGameActivity extends BaseActivity implements OnCompleteListener
 
     @BindView(R.id.gameMenu)
     ScrollView mScrollGameView;
+
+    @BindView(R.id.lottieAnimation)
+    LottieAnimationView mLottieView;
 
     /**
      * {@inheritDoc}
@@ -170,6 +174,9 @@ public class FindGameActivity extends BaseActivity implements OnCompleteListener
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 if (documentSnapshot.get("jugadorDosId") != "") {
+                    mLottieView.setRepeatCount(0);
+                    mLottieView.setAnimation("checked_animation.json");
+                    mLottieView.playAnimation();
                     mTxtLoading.setText("¡Jugador Encontrado!");
                     final Handler handler = new Handler();
                     final Runnable run = () -> startGame();
@@ -194,9 +201,16 @@ public class FindGameActivity extends BaseActivity implements OnCompleteListener
         if (mListener != null) {
             mListener.remove();
         }
+        mTxtLoading.setText("¡Jugador Encontrado!");
+        mLottieView.setRepeatCount(0);
+        mLottieView.setAnimation("checked_animation.json");
+        mLottieView.playAnimation();
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra(Constants.EXTRA_GAME_ID, gameId);
-        startActivity(intent);
+
+        final Handler handler = new Handler();
+        final Runnable run = () -> startActivity(intent);
+        handler.postDelayed(run, 1500);
     }
 
     /**
