@@ -21,7 +21,7 @@ public class Game {
         this.playeOneId = playeOneId;
         this.playerTwoId = "";
         this.selectedCell = new ArrayList<>();
-        for (int i = 0; i <= selectedCell.size(); i++) {
+        for (int i = 0; i < 9; i++) {
             this.selectedCell.add(0);
         }
         this.playerOneTurn = true;
