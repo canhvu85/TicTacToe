@@ -1,12 +1,14 @@
 package com.machucapps.tictactoe.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -167,7 +169,25 @@ public class GameActivity extends BaseActivity {
             } else {
                 mListViews.get(pos).setImageResource(R.drawable.ic_player_two);
                 game.getSelectedCell().set(pos, 2);
-            }
+
         }
+        db.collection("jugadas").document(gameId).set(game).addOnSuccessListener(aVoid -> {
+
+        }).addOnFailureListener(e -> {
+            Log.w("Error", "Error al guardar la jugada");
+        });
+        }
+    }
+
+    private void changeTurn() {
+        if (game.getPlayerOneTurn()) {
+            mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
+            mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorGrey));
+        } else {
+            mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorGrey));
+            mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
+        }
+
+        game.setPlayerOneTurn(!game.getPlayerOneTurn());
     }
 }
