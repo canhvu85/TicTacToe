@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Game {
 
-    private String playeOneId;
+    private String playerOneId;
     private String playerTwoId;
     private List<Integer> selectedCell;
     private Boolean playerOneTurn;
@@ -17,8 +17,8 @@ public class Game {
     public Game() {
     }
 
-    public Game(String playeOneId) {
-        this.playeOneId = playeOneId;
+    public Game(String playerOneId) {
+        this.playerOneId = playerOneId;
         this.playerTwoId = "";
         this.selectedCell = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
@@ -30,12 +30,12 @@ public class Game {
         this.IdDNF = "";
     }
 
-    public String getPlayeOneId() {
-        return playeOneId;
+    public String getPlayerOneId() {
+        return playerOneId;
     }
 
-    public void setPlayeOneId(String playeOneId) {
-        this.playeOneId = playeOneId;
+    public void setPlayerOneId(String playerOneId) {
+        this.playerOneId = playerOneId;
     }
 
     public String getPlayerTwoId() {

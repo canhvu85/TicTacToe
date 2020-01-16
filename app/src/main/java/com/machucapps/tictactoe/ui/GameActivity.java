@@ -1,6 +1,7 @@
 package com.machucapps.tictactoe.ui;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,12 +80,12 @@ public class GameActivity extends BaseActivity {
     }
 
     private void getPlayersNames() {
-        db.collection("users").document(game.getPlayeOneId()).get().addOnSuccessListener(documentSnapshot -> {
+        db.collection("Users").document(game.getPlayerOneId()).get().addOnSuccessListener(documentSnapshot -> {
             playerOneName = documentSnapshot.get("name").toString();
             mTvPlayerOne.setText(playerOneName);
         });
 
-        db.collection("users").document(game.getPlayerTwoId()).get().addOnSuccessListener(documentSnapshot -> {
+        db.collection("Users").document(game.getPlayerTwoId()).get().addOnSuccessListener(documentSnapshot -> {
             playerTwoName = documentSnapshot.get("name").toString();
             mTvPlayerTwo.setText(playerTwoName);
         });
@@ -138,5 +139,35 @@ public class GameActivity extends BaseActivity {
             mListener.remove();
         }
 
+    }
+
+    public void onSquareClicked(View view) {
+        if (!game.getWinnerId().isEmpty()) {
+            Toast.makeText(this, "Partida finalizada", Toast.LENGTH_LONG).show();
+        } else {
+            if (game.getPlayerOneTurn() && game.getPlayerOneId().equals(userId)) {
+                refreshGame(view.getTag().toString());
+            } else if (!game.getPlayerOneTurn() && game.getPlayerTwoId().equals(userId)) {
+                refreshGame(view.getTag().toString());
+            } else {
+                Toast.makeText(this, "Espera a tu turno", Toast.LENGTH_LONG).show();
+            }
+        }
+
+    }
+
+    private void refreshGame(String tag) {
+        int pos = Integer.parseInt(tag);
+        if (game.getSelectedCell().get(pos) != 0) {
+            Toast.makeText(this, "Selecciones una casilla libre", Toast.LENGTH_LONG).show();
+        } else {
+            if (game.getPlayerOneTurn()) {
+                mListViews.get(pos).setImageResource(R.drawable.ic_player_one);
+                game.getSelectedCell().set(pos, 1);
+            } else {
+                mListViews.get(pos).setImageResource(R.drawable.ic_player_two);
+                game.getSelectedCell().set(pos, 2);
+            }
+        }
     }
 }

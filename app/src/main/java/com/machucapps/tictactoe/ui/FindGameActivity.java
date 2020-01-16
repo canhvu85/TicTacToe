@@ -30,8 +30,8 @@ import butterknife.OnClick;
 public class FindGameActivity extends BaseActivity implements OnFailureListener {
 
     private FirebaseUser currentUser;
-    private String userId;
-    private String gameId = null;
+    private String userId="";
+    private String gameId = "";
     private ListenerRegistration mListener = null;
 
     /**
@@ -101,22 +101,19 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
      * Look for a game where some player is waiting for another player
      */
     private void lookForFreeGame() {
-        changeMenuVisibility(false);
         mTxtLoading.setText("Buscando una partida empezada...");
-        db.collection("jugadas").whereEqualTo("JugadorDosId", "").get().addOnCompleteListener(task -> {
+        mLottieView.playAnimation();
+
+        db.collection("jugadas").whereEqualTo("playerTwoId", "").get().addOnCompleteListener(task -> {
             if (task.getResult().size() == 0) {
-                mTxtLoading.setText("Creando una partida nueva...");
-                Game newGame = new Game(userId);
-                db.collection("jugadas").add(newGame).addOnSuccessListener(documentReference -> {
-                    gameId = documentReference.getId();
-                    waitForOtherPlayer();
-                }).addOnFailureListener(this);
+
+                createNewGame();
 
             } else {
                 boolean found = false;
 
                 for (DocumentSnapshot docJugada : task.getResult().getDocuments()) {
-                    if (!docJugada.get("JugadorUnoId").equals(userId)) {
+                    if (!docJugada.get("playerOneId").equals(userId)) {
                         found = true;
                         gameId = docJugada.getId();
                         Game game = docJugada.toObject(Game.class);
@@ -126,11 +123,20 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
                     break;
                 }
                 if (!found) {
-                    lookForFreeGame();
+                    createNewGame();
                 }
             }
         });
 
+    }
+
+    private void createNewGame() {
+        mTxtLoading.setText("Creando una partida nueva...");
+        Game newGame = new Game(userId);
+        db.collection("jugadas").add(newGame).addOnSuccessListener(documentReference -> {
+            gameId = documentReference.getId();
+            waitForOtherPlayer();
+        }).addOnFailureListener(this);
     }
 
     /**
@@ -160,7 +166,7 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
     protected void onResume() {
         super.onResume();
         changeMenuVisibility(true);
-        if (!gameId.equals("") && gameId != null) {
+        if (!gameId.equals("")) {
             changeMenuVisibility(false);
             waitForOtherPlayer();
         } else {
@@ -183,7 +189,7 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
     private void waitForOtherPlayer() {
         mTxtLoading.setText("Esperando a otro jugador...");
         mListener = db.collection("jugadas").document(gameId).addSnapshotListener((documentSnapshot, e) -> {
-            if (documentSnapshot.get("jugadorDosId") != "") {
+            if (!documentSnapshot.get("playerTwoId").equals("")) {
                 mLottieView.setRepeatCount(0);
                 mLottieView.setAnimation("checked_animation.json");
                 mLottieView.playAnimation();
@@ -201,10 +207,6 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
         if (mListener != null) {
             mListener.remove();
         }
-        mTxtLoading.setText("¡Jugador Encontrado!");
-        mLottieView.setRepeatCount(0);
-        mLottieView.setAnimation("checked_animation.json");
-        mLottieView.playAnimation();
         Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra(Constants.EXTRA_GAME_ID, gameId);
 
