@@ -77,8 +77,38 @@ public class GameActivity extends BaseActivity {
                 if (playerOneName.isEmpty() || playerTwoName.isEmpty()) {
                     getPlayersNames();
                 }
+
+                updateUi();
             }
+            changeNameColor();
         });
+    }
+
+    private void updateUi() {
+        for (int i = 0; i < mListViews.size(); i++) {
+            int move = game.getSelectedCell().get(i);
+
+            ImageView actualMove = mListViews.get(i);
+
+            if (move == 0) {
+                actualMove.setImageResource(R.drawable.ic_empty_square);
+            } else if (move == 1) {
+                actualMove.setImageResource(R.drawable.ic_player_one);
+            } else {
+                actualMove.setImageResource(R.drawable.ic_player_two);
+            }
+
+        }
+    }
+
+    private void changeNameColor() {
+        if (game.getPlayerOneTurn()) {
+            mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
+            mTvPlayerTwo.setTextColor(ContextCompat.getColor(this, R.color.colorGrey));
+        } else {
+            mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorGrey));
+            mTvPlayerTwo.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
+        }
     }
 
     private void getPlayersNames() {
@@ -171,6 +201,7 @@ public class GameActivity extends BaseActivity {
                 game.getSelectedCell().set(pos, 2);
 
         }
+            changeTurn();
         db.collection("jugadas").document(gameId).set(game).addOnSuccessListener(aVoid -> {
 
         }).addOnFailureListener(e -> {
@@ -180,14 +211,6 @@ public class GameActivity extends BaseActivity {
     }
 
     private void changeTurn() {
-        if (game.getPlayerOneTurn()) {
-            mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
-            mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorGrey));
-        } else {
-            mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorGrey));
-            mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
-        }
-
         game.setPlayerOneTurn(!game.getPlayerOneTurn());
     }
 }
