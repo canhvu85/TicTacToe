@@ -7,8 +7,11 @@ import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.machucapps.tictactoe.R;
 import com.machucapps.tictactoe.base.BaseActivity;
+import com.machucapps.tictactoe.model.Game;
+import com.machucapps.tictactoe.utils.Constants;
 
 import java.util.List;
 
@@ -35,6 +38,11 @@ public class GameActivity extends BaseActivity {
     @BindView(R.id.tv_player_two)
     TextView mTvPlayerTwo;
 
+    String userId, gameId, playerOneName = "", playerTwoName = "";
+    Game game;
+    ListenerRegistration mListener;
+    FirebaseUser mFirebaseUser;
+
     /**
      * {@inheritDoc}
      *
@@ -43,6 +51,16 @@ public class GameActivity extends BaseActivity {
     @Override
     public int getLayoutID() {
         return R.layout.activity_game;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        gameListener();
+    }
+
+    private void gameListener(){
+
     }
 
     /**
@@ -54,6 +72,16 @@ public class GameActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mToolbar);
+        initGame();
+
+    }
+
+    private void initGame() {
+        mFirebaseUser = firebaseAuth.getCurrentUser();
+        userId = mFirebaseUser.getUid();
+
+        Bundle extras = getIntent().getExtras();
+        gameId = extras.getString(Constants.EXTRA_GAME_ID);
 
     }
 
