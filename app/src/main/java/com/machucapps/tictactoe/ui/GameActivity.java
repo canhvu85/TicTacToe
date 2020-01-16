@@ -3,6 +3,7 @@ package com.machucapps.tictactoe.ui;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -40,7 +41,7 @@ public class GameActivity extends BaseActivity {
 
     String userId, gameId, playerOneName = "", playerTwoName = "";
     Game game;
-    ListenerRegistration mListener;
+    ListenerRegistration mListener = null;
     FirebaseUser mFirebaseUser;
 
     /**
@@ -60,7 +61,21 @@ public class GameActivity extends BaseActivity {
     }
 
     private void gameListener(){
+        mListener = db.collection("jugadas").document(gameId).addSnapshotListener(this, (documentSnapshot, e) -> {
+            if (e != null) {
+                Toast.makeText(this, "Error con la partida", Toast.LENGTH_LONG).show();
+                return;
+            }
 
+            String source = documentSnapshot != null && documentSnapshot.getMetadata().hasPendingWrites() ? "Local" : "Server";
+
+            if (documentSnapshot.exists() && source.equals("Server")) {
+                game = documentSnapshot.toObject(Game.class);
+                if (playerOneName.isEmpty() || playerTwoName.isEmpty()) {
+
+                }
+            }
+        });
     }
 
     /**
@@ -104,6 +119,12 @@ public class GameActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mListener != null) {
+            mListener.remove();
+        }
 
-
+    }
 }
