@@ -72,9 +72,21 @@ public class GameActivity extends BaseActivity {
             if (documentSnapshot.exists() && source.equals("Server")) {
                 game = documentSnapshot.toObject(Game.class);
                 if (playerOneName.isEmpty() || playerTwoName.isEmpty()) {
-
+                    getPlayersNames();
                 }
             }
+        });
+    }
+
+    private void getPlayersNames() {
+        db.collection("users").document(game.getPlayeOneId()).get().addOnSuccessListener(documentSnapshot -> {
+            playerOneName = documentSnapshot.get("name").toString();
+            mTvPlayerOne.setText(playerOneName);
+        });
+
+        db.collection("users").document(game.getPlayerTwoId()).get().addOnSuccessListener(documentSnapshot -> {
+            playerTwoName = documentSnapshot.get("name").toString();
+            mTvPlayerTwo.setText(playerTwoName);
         });
     }
 

@@ -31,7 +31,7 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
 
     private FirebaseUser currentUser;
     private String userId;
-    private String gameId;
+    private String gameId = null;
     private ListenerRegistration mListener = null;
 
     /**
@@ -160,7 +160,7 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
     protected void onResume() {
         super.onResume();
         changeMenuVisibility(true);
-        if (!gameId.equals("")) {
+        if (!gameId.equals("") && gameId != null) {
             changeMenuVisibility(false);
             waitForOtherPlayer();
         } else {
