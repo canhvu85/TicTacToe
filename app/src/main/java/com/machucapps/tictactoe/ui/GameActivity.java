@@ -17,6 +17,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.machucapps.tictactoe.R;
 import com.machucapps.tictactoe.base.BaseActivity;
 import com.machucapps.tictactoe.model.Game;
+import com.machucapps.tictactoe.model.User;
 import com.machucapps.tictactoe.utils.Constants;
 
 import java.util.List;
@@ -44,10 +45,11 @@ public class GameActivity extends BaseActivity {
     @BindView(R.id.tv_player_two)
     TextView mTvPlayerTwo;
 
-    String userId, gameId, playerOneName = "", playerTwoName = "", winnerId = "",playerName="";
+    String userId, gameId, playerOneName = "", playerTwoName = "", winnerId = "", playerName = "";
     Game game;
     ListenerRegistration mListener = null;
     FirebaseUser mFirebaseUser;
+    User userPlayerOne, userPlayerTwo;
 
     /**
      * {@inheritDoc}
@@ -122,8 +124,8 @@ public class GameActivity extends BaseActivity {
     private void getPlayersNames() {
 
 
-
         db.collection("Users").document(game.getPlayerOneId()).get().addOnSuccessListener(documentSnapshot -> {
+            userPlayerOne = documentSnapshot.toObject(User.class);
             playerOneName = documentSnapshot.get("name").toString();
             mTvPlayerOne.setText(playerOneName);
 
@@ -133,6 +135,7 @@ public class GameActivity extends BaseActivity {
         });
 
         db.collection("Users").document(game.getPlayerTwoId()).get().addOnSuccessListener(documentSnapshot -> {
+            userPlayerTwo = documentSnapshot.toObject(User.class);
             playerTwoName = documentSnapshot.get("name").toString();
             mTvPlayerTwo.setText(playerTwoName);
 
@@ -314,13 +317,16 @@ public class GameActivity extends BaseActivity {
         if (winnerId.equals("EMPATE")) {
             tvInfo.setText(playerName + "has empatado");
             tvPoints.setText("+1 Punto");
+            setUserPoints(1);
         } else if (winnerId.equals(userId)) {
             tvInfo.setText(playerName + "has ganado");
             tvPoints.setText("+3 Puntos");
+            setUserPoints(3);
         } else {
             tvInfo.setText(playerName + "has perdido");
             tvPoints.setText("0 Puntos");
             gameOverView.setAnimation("thumbs_down_animation.json");
+            setUserPoints(0);
         }
         gameOverView.playAnimation();
         builder.setPositiveButton("Ok", (dialogInterface, i) -> {
@@ -328,5 +334,24 @@ public class GameActivity extends BaseActivity {
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void setUserPoints(Integer points) {
+        User player = null;
+        if (playerOneName.equals(userPlayerOne.getName())) {
+            userPlayerOne.setPoints(userPlayerOne.getPoints() + points);
+            userPlayerOne.setGamesPlayed(userPlayerOne.getGamesPlayed() + 1);
+            player = userPlayerOne;
+        } else {
+            userPlayerTwo.setPoints(userPlayerTwo.getPoints() + points);
+            userPlayerTwo.setGamesPlayed(userPlayerTwo.getGamesPlayed() + 1);
+            player = userPlayerTwo;
+        }
+
+        db.collection("Users").document(userId).set(player).addOnSuccessListener(aVoid -> {
+
+        }).addOnFailureListener(e -> {
+        });
+
     }
 }
