@@ -63,7 +63,7 @@ public class GameActivity extends BaseActivity {
         gameListener();
     }
 
-    private void gameListener(){
+    private void gameListener() {
         mListener = db.collection("jugadas").document(gameId).addSnapshotListener(this, (documentSnapshot, e) -> {
             if (e != null) {
                 Toast.makeText(this, "Error con la partida", Toast.LENGTH_LONG).show();
@@ -200,17 +200,79 @@ public class GameActivity extends BaseActivity {
                 mListViews.get(pos).setImageResource(R.drawable.ic_player_two);
                 game.getSelectedCell().set(pos, 2);
 
-        }
-            changeTurn();
-        db.collection("jugadas").document(gameId).set(game).addOnSuccessListener(aVoid -> {
+            }
+            if (checkSolution()) {
+                game.setWinnerId(userId);
+            } else if (checkTie()) {
+                game.setWinnerId("EMPATE");
+            } else {
+                changeTurn();
+            }
+            db.collection("jugadas").document(gameId).set(game).addOnSuccessListener(aVoid -> {
 
-        }).addOnFailureListener(e -> {
-            Log.w("Error", "Error al guardar la jugada");
-        });
+            }).addOnFailureListener(e -> {
+                Log.w("Error", "Error al guardar la jugada");
+            });
         }
     }
 
     private void changeTurn() {
         game.setPlayerOneTurn(!game.getPlayerOneTurn());
+    }
+
+
+    private boolean checkTie() {
+
+        boolean emptySquare = false;
+        boolean gameFinished = false;
+
+        for (int i = 0; i < mListViews.size(); i++) {
+            if (game.getSelectedCell().get(i) == 0) {
+                emptySquare = true;
+                break;
+            }
+
+        }
+
+        if (!emptySquare) {
+
+            gameFinished = true;
+        }
+
+        return gameFinished;
+    }
+
+    private boolean checkSolution() {
+
+        boolean gameFinished = false;
+
+
+        List<Integer> selectedCells = game.getSelectedCell();
+        if (selectedCells.get(0).equals(selectedCells.get(1)) && selectedCells.get(1).equals(selectedCells.get(2)) && selectedCells.get(2) != 0) {
+            gameFinished = true;
+        } else if (selectedCells.get(3).equals(selectedCells.get(4)) && selectedCells.get(4).equals(selectedCells.get(5)) && selectedCells.get(5) != 0) {
+            gameFinished = true;
+        } else if (selectedCells.get(6).equals(selectedCells.get(7)) && selectedCells.get(7).equals(selectedCells.get(8)) && selectedCells.get(8) != 0) {
+            gameFinished = true;
+
+        } else if (selectedCells.get(0).equals(selectedCells.get(3)) && selectedCells.get(3).equals(selectedCells.get(6)) && selectedCells.get(6) != 0) {
+            gameFinished = true;
+
+        } else if (selectedCells.get(1).equals(selectedCells.get(4)) && selectedCells.get(4).equals(selectedCells.get(7)) && selectedCells.get(7) != 0) {
+            gameFinished = true;
+
+        } else if (selectedCells.get(2).equals(selectedCells.get(5)) && selectedCells.get(5).equals(selectedCells.get(8)) && selectedCells.get(8) != 0) {
+            gameFinished = true;
+
+        } else if (selectedCells.get(0).equals(selectedCells.get(4)) && selectedCells.get(4).equals(selectedCells.get(8)) && selectedCells.get(8) != 0) {
+            gameFinished = true;
+
+        } else if (selectedCells.get(2).equals(selectedCells.get(4)) && selectedCells.get(4).equals(selectedCells.get(6)) && selectedCells.get(6) != 0) {
+            gameFinished = true;
+
+
+        }
+
+        return gameFinished;
     }
 }
