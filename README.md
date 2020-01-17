@@ -12,10 +12,10 @@ Puedes comprobar el curso visitando la URL de Udemy (https://www.udemy.com/andro
 ### Capturas de pantalla:
 
 <p align="center">
-  <img src="screensshots/game_intro_screen.png" width="200" alt="Intro Screen">
-  <img src="screensshots/game_waiting_screen.png" width="200" alt="Intro Screen">
-  <img src="screensshots/game_screen.png" width="200" alt="Intro Screen">
-  <img src="screensshots/game_result_screen.png" width="200" alt="Intro Screen">
+  <img src="screensshots/game_intro_screen.png" width="200">
+  <img src="screensshots/game_waiting_screen.png" width="200">
+  <img src="screensshots/game_screen.png" width="200">
+  <img src="screensshots/game_result_screen.png" width="200">
 </p>
 
 
