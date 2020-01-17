@@ -1,7 +1,5 @@
 package com.machucapps.tictactoe.ui;
 
-import androidx.annotation.NonNull;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,14 +8,16 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.machucapps.tictactoe.R;
 import com.machucapps.tictactoe.base.BaseActivity;
 import com.machucapps.tictactoe.model.User;
+import com.machucapps.tictactoe.utils.Constants;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -75,11 +75,11 @@ public class SignUpActivity extends BaseActivity implements OnCompleteListener, 
         setPbVisibility(true);
         if (null != firebaseUser) {
             User user = new User(mEtName.getText().toString(), 0, 0);
-            db.collection("Users").document(firebaseUser.getUid()).set(user).addOnSuccessListener(this);
+            db.collection(Constants.FIREBASE_COLLECTION_USER).document(firebaseUser.getUid()).set(user).addOnSuccessListener(this);
 
         } else {
             setPbVisibility(false);
-            Toast.makeText(this, "Se ha producido un error", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.label_error), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -104,7 +104,7 @@ public class SignUpActivity extends BaseActivity implements OnCompleteListener, 
 
             createUser(name, email, password);
         } else {
-            Toast.makeText(this, "Rellena todos los cambios", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.label_empty_field), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -144,10 +144,15 @@ public class SignUpActivity extends BaseActivity implements OnCompleteListener, 
             FirebaseUser user = firebaseAuth.getCurrentUser();
             updateUI(user, true);
         } else {
-            Toast.makeText(this, "Se ha producido un error", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.label_error), Toast.LENGTH_LONG).show();
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param o
+     */
     @Override
     public void onSuccess(Object o) {
         setPbVisibility(false);

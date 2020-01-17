@@ -30,6 +30,7 @@ import butterknife.OnClick;
  * GameActivity Class
  */
 public class GameActivity extends BaseActivity {
+
     /**
      * BindView's
      */
@@ -45,6 +46,9 @@ public class GameActivity extends BaseActivity {
     @BindView(R.id.tv_player_two)
     TextView mTvPlayerTwo;
 
+    /**
+     * Variables
+     */
     String userId, gameId, playerOneName = "", playerTwoName = "", winnerId = "", playerName = "";
     Game game;
     ListenerRegistration mListener = null;
@@ -61,22 +65,28 @@ public class GameActivity extends BaseActivity {
         return R.layout.activity_game;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onStart() {
         super.onStart();
         gameListener();
     }
 
+    /**
+     * Game Listener
+     */
     private void gameListener() {
-        mListener = db.collection("jugadas").document(gameId).addSnapshotListener(this, (documentSnapshot, e) -> {
+        mListener = db.collection(Constants.FIREBASE_COLLECTION_JUGADAS).document(gameId).addSnapshotListener(this, (documentSnapshot, e) -> {
             if (e != null) {
-                Toast.makeText(this, "Error con la partida", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.label_error), Toast.LENGTH_LONG).show();
                 return;
             }
 
-            String source = documentSnapshot != null && documentSnapshot.getMetadata().hasPendingWrites() ? "Local" : "Server";
+            String source = documentSnapshot != null && documentSnapshot.getMetadata().hasPendingWrites() ? Constants.LOCAL : Constants.SERVER;
 
-            if (documentSnapshot.exists() && source.equals("Server")) {
+            if (documentSnapshot.exists() && source.equals(Constants.SERVER)) {
                 game = documentSnapshot.toObject(Game.class);
                 if (playerOneName.isEmpty() || playerTwoName.isEmpty()) {
                     getPlayersNames();
@@ -89,6 +99,9 @@ public class GameActivity extends BaseActivity {
         });
     }
 
+    /**
+     * Update UI
+     */
     private void updateUi() {
         for (int i = 0; i < mListViews.size(); i++) {
             int move = game.getSelectedCell().get(i);
@@ -106,6 +119,9 @@ public class GameActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Refresh User UI
+     */
     private void refreshUserUI() {
         if (game.getPlayerOneTurn()) {
             mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
@@ -121,12 +137,15 @@ public class GameActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Get Players Names
+     */
     private void getPlayersNames() {
 
 
-        db.collection("Users").document(game.getPlayerOneId()).get().addOnSuccessListener(documentSnapshot -> {
+        db.collection(Constants.FIREBASE_COLLECTION_USER).document(game.getPlayerOneId()).get().addOnSuccessListener(documentSnapshot -> {
             userPlayerOne = documentSnapshot.toObject(User.class);
-            playerOneName = documentSnapshot.get("name").toString();
+            playerOneName = documentSnapshot.get(Constants.FIREBASE_FIELD_PLAYER_NAME).toString();
             mTvPlayerOne.setText(playerOneName);
 
             if (game.getPlayerOneId().equals(userId)) {
@@ -134,9 +153,9 @@ public class GameActivity extends BaseActivity {
             }
         });
 
-        db.collection("Users").document(game.getPlayerTwoId()).get().addOnSuccessListener(documentSnapshot -> {
+        db.collection(Constants.FIREBASE_COLLECTION_USER).document(game.getPlayerTwoId()).get().addOnSuccessListener(documentSnapshot -> {
             userPlayerTwo = documentSnapshot.toObject(User.class);
-            playerTwoName = documentSnapshot.get("name").toString();
+            playerTwoName = documentSnapshot.get(Constants.FIREBASE_FIELD_PLAYER_NAME).toString();
             mTvPlayerTwo.setText(playerTwoName);
 
             if (game.getPlayerTwoId().equals(userId)) {
@@ -158,6 +177,9 @@ public class GameActivity extends BaseActivity {
 
     }
 
+    /**
+     * Init Game
+     */
     private void initGame() {
         mFirebaseUser = firebaseAuth.getCurrentUser();
         userId = mFirebaseUser.getUid();
@@ -186,6 +208,9 @@ public class GameActivity extends BaseActivity {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -195,25 +220,35 @@ public class GameActivity extends BaseActivity {
 
     }
 
-    public void onSquareClicked(View view) {
+    /**
+     * OnCell Click
+     *
+     * @param view
+     */
+    public void onCellClicked(View view) {
         if (!game.getWinnerId().isEmpty()) {
-            Toast.makeText(this, "Partida finalizada", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.label_game_finished), Toast.LENGTH_LONG).show();
         } else {
             if (game.getPlayerOneTurn() && game.getPlayerOneId().equals(userId)) {
                 refreshGame(view.getTag().toString());
             } else if (!game.getPlayerOneTurn() && game.getPlayerTwoId().equals(userId)) {
                 refreshGame(view.getTag().toString());
             } else {
-                Toast.makeText(this, "Espera a tu turno", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.label_wait_your_turn), Toast.LENGTH_LONG).show();
             }
         }
 
     }
 
+    /**
+     * Refresh Game
+     *
+     * @param tag
+     */
     private void refreshGame(String tag) {
         int pos = Integer.parseInt(tag);
         if (game.getSelectedCell().get(pos) != 0) {
-            Toast.makeText(this, "Selecciones una casilla libre", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.label_select_empty_cell), Toast.LENGTH_LONG).show();
         } else {
             if (game.getPlayerOneTurn()) {
                 mListViews.get(pos).setImageResource(R.drawable.ic_player_one);
@@ -227,24 +262,31 @@ public class GameActivity extends BaseActivity {
                 game.setWinnerId(userId);
 
             } else if (checkTie()) {
-                game.setWinnerId("EMPATE");
+                game.setWinnerId(Constants.TIE);
 
             } else {
                 changeTurn();
             }
-            db.collection("jugadas").document(gameId).set(game).addOnSuccessListener(aVoid -> {
+            db.collection(Constants.FIREBASE_COLLECTION_JUGADAS).document(gameId).set(game).addOnSuccessListener(aVoid -> {
 
             }).addOnFailureListener(e -> {
-                Log.w("Error", "Error al guardar la jugada");
+                Log.w("Error", getString(R.string.label_error));
             });
         }
     }
 
+    /**
+     * Change player turn
+     */
     private void changeTurn() {
         game.setPlayerOneTurn(!game.getPlayerOneTurn());
     }
 
-
+    /**
+     * Check a tie between players
+     *
+     * @return true is tie - false ottherwise
+     */
     private boolean checkTie() {
 
         boolean emptySquare = false;
@@ -255,17 +297,20 @@ public class GameActivity extends BaseActivity {
                 emptySquare = true;
                 break;
             }
-
         }
 
         if (!emptySquare) {
-
             gameFinished = true;
         }
 
         return gameFinished;
     }
 
+    /**
+     * Check Solution
+     *
+     * @return true game is finished - false otherwise
+     */
     private boolean checkSolution() {
 
         boolean gameFinished = false;
@@ -300,9 +345,12 @@ public class GameActivity extends BaseActivity {
         return gameFinished;
     }
 
+    /**
+     * Show GameOver Dialog
+     */
     private void showGameOverDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Game Over");
+        builder.setTitle(getString(R.string.label_game_over));
         View view = getLayoutInflater().inflate(R.layout.dialog_layout, null);
 
         TextView tvPoints = view.findViewById(R.id.tvPoints);
@@ -314,30 +362,35 @@ public class GameActivity extends BaseActivity {
         builder.setCancelable(false);
 
 
-        if (winnerId.equals("EMPATE")) {
-            tvInfo.setText(playerName + "has empatado");
-            tvPoints.setText("+1 Punto");
+        if (winnerId.equals(Constants.TIE)) {
+            tvInfo.setText(getString(R.string.label_player_tie, playerName));
+            tvPoints.setText(getString(R.string.label_one_point));
             setUserPoints(1);
         } else if (winnerId.equals(userId)) {
-            tvInfo.setText(playerName + "has ganado");
-            tvPoints.setText("+3 Puntos");
+            tvInfo.setText(getString(R.string.label_player_winner, playerName));
+            tvPoints.setText(getString(R.string.label_three_point));
             setUserPoints(3);
         } else {
-            tvInfo.setText(playerName + "has perdido");
-            tvPoints.setText("0 Puntos");
+            tvInfo.setText(getString(R.string.label_player_looser, playerName));
+            tvPoints.setText(getString(R.string.label_zero_point));
             gameOverView.setAnimation("thumbs_down_animation.json");
             setUserPoints(0);
         }
         gameOverView.playAnimation();
-        builder.setPositiveButton("Ok", (dialogInterface, i) -> {
+        builder.setPositiveButton(getString(R.string.label_ok), (dialogInterface, i) -> {
             finish();
         });
         AlertDialog dialog = builder.create();
         dialog.show();
     }
 
+    /**
+     * Set User Points
+     *
+     * @param points
+     */
     private void setUserPoints(Integer points) {
-        User player = null;
+        User player;
         if (playerOneName.equals(userPlayerOne.getName())) {
             userPlayerOne.setPoints(userPlayerOne.getPoints() + points);
             userPlayerOne.setGamesPlayed(userPlayerOne.getGamesPlayed() + 1);
@@ -348,7 +401,7 @@ public class GameActivity extends BaseActivity {
             player = userPlayerTwo;
         }
 
-        db.collection("Users").document(userId).set(player).addOnSuccessListener(aVoid -> {
+        db.collection(Constants.FIREBASE_COLLECTION_USER).document(userId).set(player).addOnSuccessListener(aVoid -> {
 
         }).addOnFailureListener(e -> {
         });

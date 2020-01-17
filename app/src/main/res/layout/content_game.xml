@@ -52,7 +52,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/iv_one"
-        android:onClick="onSquareClicked"
+        android:onClick="onCellClicked"
         app:srcCompat="@drawable/ic_empty_square" />
 
     <ImageView
@@ -65,7 +65,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv_zero"
         app:layout_constraintTop_toBottomOf="@+id/imageView2"
-        android:onClick="onSquareClicked"
+        android:onClick="onCellClicked"
         app:srcCompat="@drawable/ic_empty_square" />
 
     <ImageView
@@ -78,7 +78,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv_one"
         app:layout_constraintTop_toTopOf="@+id/iv_one"
-        android:onClick="onSquareClicked"
+        android:onClick="onCellClicked"
         app:srcCompat="@drawable/ic_empty_square" />
 
     <ImageView
@@ -91,7 +91,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/iv_four"
-        android:onClick="onSquareClicked"
+        android:onClick="onCellClicked"
         app:srcCompat="@drawable/ic_empty_square" />
 
     <ImageView
@@ -104,7 +104,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv_three"
         app:layout_constraintTop_toBottomOf="@+id/iv_one"
-        android:onClick="onSquareClicked"
+        android:onClick="onCellClicked"
         app:srcCompat="@drawable/ic_empty_square" />
 
     <ImageView
@@ -117,7 +117,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv_four"
         app:layout_constraintTop_toTopOf="@+id/iv_four"
-        android:onClick="onSquareClicked"
+        android:onClick="onCellClicked"
         app:srcCompat="@drawable/ic_empty_square" />
 
     <ImageView
@@ -130,7 +130,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/iv_seven"
-        android:onClick="onSquareClicked"
+        android:onClick="onCellClicked"
         app:srcCompat="@drawable/ic_empty_square" />
 
     <ImageView
@@ -143,7 +143,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv_six"
         app:layout_constraintTop_toBottomOf="@+id/iv_four"
-        android:onClick="onSquareClicked"
+        android:onClick="onCellClicked"
         app:srcCompat="@drawable/ic_empty_square" />
 
     <ImageView
@@ -156,7 +156,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv_seven"
         app:layout_constraintTop_toTopOf="@+id/iv_seven"
-        android:onClick="onSquareClicked"
+        android:onClick="onCellClicked"
         app:srcCompat="@drawable/ic_empty_square" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

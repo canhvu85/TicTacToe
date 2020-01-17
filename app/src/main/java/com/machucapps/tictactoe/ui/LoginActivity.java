@@ -1,7 +1,5 @@
 package com.machucapps.tictactoe.ui;
 
-import androidx.annotation.NonNull;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +7,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -85,7 +85,7 @@ public class LoginActivity extends BaseActivity implements OnCompleteListener {
         } else {
             setPbVisibility(false);
             if (isSignUp) {
-                Toast.makeText(this, "Se ha producido un error", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.label_error), Toast.LENGTH_LONG).show();
             }
 
         }
@@ -154,7 +154,7 @@ public class LoginActivity extends BaseActivity implements OnCompleteListener {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             updateUI(user, true);
         } else {
-            Toast.makeText(this, "Se ha producido un error", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.label_error), Toast.LENGTH_LONG).show();
         }
     }
 

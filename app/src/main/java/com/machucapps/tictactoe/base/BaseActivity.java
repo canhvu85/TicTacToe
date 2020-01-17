@@ -17,7 +17,7 @@ import butterknife.ButterKnife;
 public abstract class BaseActivity extends AppCompatActivity {
 
     /**
-     * FirebaseAuth
+     * FirebaseAuth and FirebaseFirestore
      */
     protected FirebaseAuth firebaseAuth;
     protected FirebaseFirestore db;

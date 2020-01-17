@@ -29,28 +29,26 @@ import butterknife.OnClick;
  */
 public class FindGameActivity extends BaseActivity implements OnFailureListener {
 
-    private FirebaseUser currentUser;
-    private String userId="";
-    private String gameId = "";
-    private ListenerRegistration mListener = null;
-
     /**
      * BindView's
      */
     @BindView(R.id.textViewLoading)
     TextView mTxtLoading;
-
     @BindView(R.id.progressBarGames)
     ProgressBar mPbGames;
-
     @BindView(R.id.scrollProgressBar)
     ScrollView mScrollProgressBar;
-
     @BindView(R.id.gameMenu)
     ScrollView mScrollGameView;
-
     @BindView(R.id.lottieAnimation)
     LottieAnimationView mLottieView;
+
+    /**
+     * Variables
+     */
+    private FirebaseUser currentUser;
+    private String userId = "", gameId = "";
+    private ListenerRegistration mListener = null;
 
     /**
      * {@inheritDoc}
@@ -71,7 +69,7 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPbGames.setIndeterminate(true);
-        mTxtLoading.setText("Cargando...");
+        mTxtLoading.setText(R.string.label_charging);
         changeMenuVisibility(true);
         currentUser = firebaseAuth.getCurrentUser();
         userId = currentUser.getUid();
@@ -101,10 +99,10 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
      * Look for a game where some player is waiting for another player
      */
     private void lookForFreeGame() {
-        mTxtLoading.setText("Buscando una partida empezada...");
+        mTxtLoading.setText(getString(R.string.label_looking_for_new_game));
         mLottieView.playAnimation();
 
-        db.collection("jugadas").whereEqualTo("playerTwoId", "").get().addOnCompleteListener(task -> {
+        db.collection(Constants.FIREBASE_COLLECTION_JUGADAS).whereEqualTo(Constants.FIREBASE_FIELD_PLAYER_TWO_ID, "").get().addOnCompleteListener(task -> {
             if (task.getResult().size() == 0) {
 
                 createNewGame();
@@ -113,12 +111,12 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
                 boolean found = false;
 
                 for (DocumentSnapshot docJugada : task.getResult().getDocuments()) {
-                    if (!docJugada.get("playerOneId").equals(userId)) {
+                    if (!docJugada.get(Constants.FIREBASE_FIELD_PLAYER_ONE_ID).equals(userId)) {
                         found = true;
                         gameId = docJugada.getId();
                         Game game = docJugada.toObject(Game.class);
                         game.setPlayerTwoId(userId);
-                        db.collection("jugadas").document(gameId).set(game).addOnSuccessListener(aVoid -> startGame()).addOnFailureListener(this);
+                        db.collection(Constants.FIREBASE_COLLECTION_JUGADAS).document(gameId).set(game).addOnSuccessListener(aVoid -> startGame()).addOnFailureListener(this);
                     }
                     break;
                 }
@@ -130,10 +128,13 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
 
     }
 
+    /**
+     * Create new game
+     */
     private void createNewGame() {
-        mTxtLoading.setText("Creando una partida nueva...");
+        mTxtLoading.setText(getString(R.string.label_creating_new_game));
         Game newGame = new Game(userId);
-        db.collection("jugadas").add(newGame).addOnSuccessListener(documentReference -> {
+        db.collection(Constants.FIREBASE_COLLECTION_JUGADAS).add(newGame).addOnSuccessListener(documentReference -> {
             gameId = documentReference.getId();
             waitForOtherPlayer();
         }).addOnFailureListener(this);
@@ -174,6 +175,9 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -181,19 +185,21 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
             mListener.remove();
         }
         if (!gameId.equals("")) {
-            db.collection("jugadas").document(gameId).delete().addOnCompleteListener(task -> gameId = "");
+            db.collection(Constants.FIREBASE_COLLECTION_JUGADAS).document(gameId).delete().addOnCompleteListener(task -> gameId = "");
         }
     }
 
-
+    /**
+     * Wait for other player
+     */
     private void waitForOtherPlayer() {
-        mTxtLoading.setText("Esperando a otro jugador...");
-        mListener = db.collection("jugadas").document(gameId).addSnapshotListener((documentSnapshot, e) -> {
-            if (!documentSnapshot.get("playerTwoId").equals("")) {
+        mTxtLoading.setText(getString(R.string.label_waiting_player));
+        mListener = db.collection(Constants.FIREBASE_COLLECTION_JUGADAS).document(gameId).addSnapshotListener((documentSnapshot, e) -> {
+            if (!documentSnapshot.get(Constants.FIREBASE_FIELD_PLAYER_TWO_ID).equals("")) {
                 mLottieView.setRepeatCount(0);
                 mLottieView.setAnimation("checked_animation.json");
                 mLottieView.playAnimation();
-                mTxtLoading.setText("¡Jugador Encontrado!");
+                mTxtLoading.setText(getString(R.string.label_player_found));
                 final Handler handler = new Handler();
                 final Runnable run = () -> startGame();
                 handler.postDelayed(run, 1500);
@@ -202,7 +208,9 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
 
     }
 
-
+    /**
+     * Start Game
+     */
     private void startGame() {
         if (mListener != null) {
             mListener.remove();
@@ -224,6 +232,6 @@ public class FindGameActivity extends BaseActivity implements OnFailureListener 
     @Override
     public void onFailure(@NonNull Exception e) {
         changeMenuVisibility(true);
-        Toast.makeText(this, "Se ha producido un error", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.label_error), Toast.LENGTH_LONG).show();
     }
 }

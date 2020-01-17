@@ -1,4 +1,23 @@
 <resources>
     <string name="app_name">TicTacToe</string>
     <string name="title_activity_game">GameActivity</string>
+
+    <string name="label_charging">Cargando...</string>
+    <string name="label_looking_for_new_game">Buscando una partida empezada...</string>
+    <string name="label_creating_new_game">Creando una partida nueva...</string>
+    <string name="label_waiting_player">Esperando a otro jugador...</string>
+    <string name="label_player_found">¡Jugador Encontrado!</string>
+    <string name="label_error">Se ha producido un error</string>
+    <string name="label_game_finished">Partida finalizada</string>
+    <string name="label_wait_your_turn">Espera tu turno</string>
+    <string name="label_select_empty_cell">Selecciona una casilla vacía</string>
+    <string name="label_game_over">GAME OVER</string>
+    <string name="label_player_tie">%1$s has empatado!</string>
+    <string name="label_player_winner">%1$s has ganado!</string>
+    <string name="label_player_looser">%1$s has perdido!</string>
+    <string name="label_one_point">+1 Punto!</string>
+    <string name="label_three_point">+3 Puntos!</string>
+    <string name="label_zero_point">+0 Puntos!</string>
+    <string name="label_ok">Ok</string>
+    <string name="label_empty_field">Rellena todos los campos</string>
 </resources>
