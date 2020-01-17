@@ -1,5 +1,6 @@
 package com.machucapps.tictactoe.ui;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.machucapps.tictactoe.R;
@@ -42,7 +44,7 @@ public class GameActivity extends BaseActivity {
     @BindView(R.id.tv_player_two)
     TextView mTvPlayerTwo;
 
-    String userId, gameId, playerOneName = "", playerTwoName = "";
+    String userId, gameId, playerOneName = "", playerTwoName = "", winnerId = "",playerName="";
     Game game;
     ListenerRegistration mListener = null;
     FirebaseUser mFirebaseUser;
@@ -76,11 +78,12 @@ public class GameActivity extends BaseActivity {
                 game = documentSnapshot.toObject(Game.class);
                 if (playerOneName.isEmpty() || playerTwoName.isEmpty()) {
                     getPlayersNames();
+
                 }
 
                 updateUi();
             }
-            changeNameColor();
+            refreshUserUI();
         });
     }
 
@@ -101,7 +104,7 @@ public class GameActivity extends BaseActivity {
         }
     }
 
-    private void changeNameColor() {
+    private void refreshUserUI() {
         if (game.getPlayerOneTurn()) {
             mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
             mTvPlayerTwo.setTextColor(ContextCompat.getColor(this, R.color.colorGrey));
@@ -109,17 +112,33 @@ public class GameActivity extends BaseActivity {
             mTvPlayerOne.setTextColor(ContextCompat.getColor(this, R.color.colorGrey));
             mTvPlayerTwo.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
         }
+
+        if (!game.getWinnerId().isEmpty()) {
+            winnerId = game.getWinnerId();
+            showGameOverDialog();
+        }
     }
 
     private void getPlayersNames() {
+
+
+
         db.collection("Users").document(game.getPlayerOneId()).get().addOnSuccessListener(documentSnapshot -> {
             playerOneName = documentSnapshot.get("name").toString();
             mTvPlayerOne.setText(playerOneName);
+
+            if (game.getPlayerOneId().equals(userId)) {
+                playerName = playerOneName;
+            }
         });
 
         db.collection("Users").document(game.getPlayerTwoId()).get().addOnSuccessListener(documentSnapshot -> {
             playerTwoName = documentSnapshot.get("name").toString();
             mTvPlayerTwo.setText(playerTwoName);
+
+            if (game.getPlayerTwoId().equals(userId)) {
+                playerName = playerTwoName;
+            }
         });
     }
 
@@ -203,8 +222,10 @@ public class GameActivity extends BaseActivity {
             }
             if (checkSolution()) {
                 game.setWinnerId(userId);
+
             } else if (checkTie()) {
                 game.setWinnerId("EMPATE");
+
             } else {
                 changeTurn();
             }
@@ -274,5 +295,38 @@ public class GameActivity extends BaseActivity {
         }
 
         return gameFinished;
+    }
+
+    private void showGameOverDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Game Over");
+        View view = getLayoutInflater().inflate(R.layout.dialog_layout, null);
+
+        TextView tvPoints = view.findViewById(R.id.tvPoints);
+        TextView tvInfo = view.findViewById(R.id.tvInfo);
+        LottieAnimationView gameOverView = view.findViewById(R.id.lottieAnimation);
+
+
+        builder.setView(view);
+        builder.setCancelable(false);
+
+
+        if (winnerId.equals("EMPATE")) {
+            tvInfo.setText(playerName + "has empatado");
+            tvPoints.setText("+1 Punto");
+        } else if (winnerId.equals(userId)) {
+            tvInfo.setText(playerName + "has ganado");
+            tvPoints.setText("+3 Puntos");
+        } else {
+            tvInfo.setText(playerName + "has perdido");
+            tvPoints.setText("0 Puntos");
+            gameOverView.setAnimation("thumbs_down_animation.json");
+        }
+        gameOverView.playAnimation();
+        builder.setPositiveButton("Ok", (dialogInterface, i) -> {
+            finish();
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
